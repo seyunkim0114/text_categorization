@@ -37,10 +37,8 @@ def text_preprocess(line):
     line = ' '.join(line)
 
     return line
-
-print(os.path.join(os.path.dirname(train_data_path), "corpus1/train/22774.article"))
  
-if not os.path.exists(f"preprocessed_{train_data_path.split('/')[-2]}.csv"):
+if not os.path.exists(f"preprocessed_{train_data_path.split('/')[-1].split('.')[0]}.csv"):
     with open(train_data_path, 'r') as f:
         for path in f:
             text = ""
@@ -65,7 +63,7 @@ else:
     print("saved len of train data: ", len(train_data))
     # print(train_data.head())
 
-if not os.path.exists(f"preprocessed_{test_data_path.split('/')[-2]}.csv"):
+if not os.path.exists(f"preprocessed_{test_data_path.split('/')[-1].split('.')[0]}.csv"):
     with open(test_data_path, 'r') as f:
         for path in f:
             text = ""
@@ -90,46 +88,46 @@ else:
     print("saved len of train data: ", len(test_data))
     # print(train_data.head())
 
-exit(1)
-# if not os.path.exists(f"preprocessed_training_{train_data_path.split('/')[-2]}.csv"):
+# exit(1)
+# # if not os.path.exists(f"preprocessed_training_{train_data_path.split('/')[-2]}.csv"):
+# #     # loops through files in the directory
+# #     for filename in os.listdir(train_data_path):
+# #         text = ""
+# #         # loops through lines of the article
+# #         with open(os.path.join(train_data_path, filename), 'r') as f:
+# #             for line in f:
+# #                 line = f.readline()
+# #                 line = text_preprocess(line)
+# #                 text = text + " " + line
+
+# #             temp = pd.DataFrame({"id":[filename.split('.')[0]], "text":[text]})
+# #             train_data = pd.concat([train_data, temp], ignore_index=True)
+# #     # print(train_data.head())
+# #     print("len of df: ", len(train_data))
+# #     train_data.to_csv(f"preprocessed_training_{train_data_path.split('/')[-2]}.csv")
+# # else:
+# #     train_data = pd.read_csv(f"preprocessed_training_{train_data_path.split('/')[-2]}.csv")
+# #     print("saved len of train data: ", len(train_data))
+
+
+# if not os.path.exists(f"preprocessed_testing_{test_data_path.split('/')[-2]}.csv"):
 #     # loops through files in the directory
-#     for filename in os.listdir(train_data_path):
+#     for filename in os.listdir(test_data_path):
 #         text = ""
 #         # loops through lines of the article
-#         with open(os.path.join(train_data_path, filename), 'r') as f:
+#         with open(os.path.join(test_data_path, filename), 'r') as f:
 #             for line in f:
 #                 line = f.readline()
 #                 line = text_preprocess(line)
 #                 text = text + " " + line
 
 #             temp = pd.DataFrame({"id":[filename.split('.')[0]], "text":[text]})
-#             train_data = pd.concat([train_data, temp], ignore_index=True)
-#     # print(train_data.head())
-#     print("len of df: ", len(train_data))
-#     train_data.to_csv(f"preprocessed_training_{train_data_path.split('/')[-2]}.csv")
+#             test_data = pd.concat([test_data, temp])
+#     print("len of test df: ", len(test_data))
+#     train_data.to_csv(f"preprocessed_testing_{test_data_path.split('/')[-2]}.csv")
 # else:
-#     train_data = pd.read_csv(f"preprocessed_training_{train_data_path.split('/')[-2]}.csv")
-#     print("saved len of train data: ", len(train_data))
-
-
-if not os.path.exists(f"preprocessed_testing_{test_data_path.split('/')[-2]}.csv"):
-    # loops through files in the directory
-    for filename in os.listdir(test_data_path):
-        text = ""
-        # loops through lines of the article
-        with open(os.path.join(test_data_path, filename), 'r') as f:
-            for line in f:
-                line = f.readline()
-                line = text_preprocess(line)
-                text = text + " " + line
-
-            temp = pd.DataFrame({"id":[filename.split('.')[0]], "text":[text]})
-            test_data = pd.concat([test_data, temp])
-    print("len of test df: ", len(test_data))
-    train_data.to_csv(f"preprocessed_testing_{test_data_path.split('/')[-2]}.csv")
-else:
-    test_data = pd.read_csv(f"preprocessed_testing_{test_data_path.split('/')[-2]}.csv")
-    print("saved len of test data: ", len(test_data))
+#     test_data = pd.read_csv(f"preprocessed_testing_{test_data_path.split('/')[-2]}.csv")
+#     print("saved len of test data: ", len(test_data))
 
 
 ## Calculate TF-IDF weights
