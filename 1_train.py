@@ -11,6 +11,8 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem import WordNetLemmatizer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 
 from control.config import args
 
@@ -58,8 +60,9 @@ if not os.path.exists(f"preprocessed/preprocessed_{train_data_path.split('/')[-1
                     # line = file.readline()
                     line = text_preprocess(line)
                     text = text + " " + line
-
-            temp = pd.DataFrame({"id":[text_id], "text":[text], "category":[category]})
+            tokenized = nltk.tokenize.word_tokenize(text)
+            fdist = nltk.FreqDist(tokenized).keys()
+            temp = pd.DataFrame({"id":[text_id], "text":[text], "fdist":[fdist], "category":[category]})
             train_data = pd.concat([train_data, temp], ignore_index=True)
     print("len of df: ", len(train_data))
     train_data.to_csv(f"preprocessed/preprocessed_{train_data_path.split('/')[-1].split('.')[0]}.csv")
@@ -94,13 +97,59 @@ else:
     # print(train_data.head())
 
 
-## Calculate TF-IDF weights
-# tfidf_vectorizer = TfidfVectorizer(use_idf=True)
-# train_tfidf = tfidf_vectorizer.fit_transform(train_data["text"])
-# print("size: ", train_tfidf.shape)
-# print("feature size :", len(tfidf_vectorizer.get_feature_names_out()))
-# print(tfidf_vectorizer.get_feature_names_out())
-# test_tfidf = tfidf_vectorizer.fit_transform(test_data)
+# Label encode train documents and get doc statistics
+total_train_documents = len(train_data)
+train_doc_category = train_data["category"].unique()
+le = LabelEncoder()
+labels = le.fit_transform(train_data["category"])
+# train_data["labels"] = labels
 
-# Baysian
-# 
+for i in range(max(labels)):
+    _, category_freq_train = np.unique(labels, return_counts=True)
+train_classes = {v:k for v,k in enumerate(le.classes_)}
+
+
+def get_maximum_likelihood_estimate(t, c, data):
+    '''
+    Input : t : a word in a document (string)
+            c : category (int or string)
+            data : train or test data (dataframe)
+    Output : logP(t|c) 
+
+    Returns maximum likelihood estimate (probability of seeing t in category c)
+    '''
+    category_c = data.loc[data["labels"] == c]
+    print(category_c)
+    count_docs_contain_t = 0
+
+    for doc in category_c:
+        if t in doc["text"]:
+            count_docs_contain_t += 1
+
+    return count_docs_contain_t / len(category_c)
+
+prob = get_maximum_likelihood_estimate("activity", 0, train_data)
+
+    
+
+
+
+
+# Bayesian Text Categorization
+
+category_prob_train = category_freq_train / total_train_documents # P(c)
+all_words = set(train_data["fdist"])
+# print(len(all_words))
+
+# for i in range(max(labels)):
+#     docs_in_i = train_data.index[train_data["labels"] == i].tolist()
+#     for j in docs_in_i:
+#         if 
+
+
+
+# print(labels)
+# train_label = ohe.fit_transform(labels).toarray()
+# print("0: ", len(train_label))
+# print("1: ", train_label.shape)
+# print("2: ", train_label[0])
